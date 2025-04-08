@@ -1,9 +1,9 @@
-package com.example.photoswooper.data.database
+package top.madkarma.photoswooper.data.database
 
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.example.photoswooper.data.models.PhotoStatus
+import top.madkarma.photoswooper.data.models.PhotoStatus
 
 /* This represents a row in the mediaStatus table in Room */
 @Entity(

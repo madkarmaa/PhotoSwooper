@@ -1,4 +1,4 @@
-package com.example.photoswooper.utils
+package top.madkarma.photoswooper.utils
 
 import android.app.Activity
 import android.content.ContentUris
@@ -10,10 +10,10 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.core.app.ActivityCompat.startIntentSenderForResult
 import androidx.exifinterface.media.ExifInterface
-import com.example.photoswooper.data.database.MediaStatusDao
-import com.example.photoswooper.data.models.Photo
-import com.example.photoswooper.data.models.PhotoStatus
-import com.example.photoswooper.data.photoLimit
+import top.madkarma.photoswooper.data.database.MediaStatusDao
+import top.madkarma.photoswooper.data.models.Photo
+import top.madkarma.photoswooper.data.models.PhotoStatus
+import top.madkarma.photoswooper.data.photoLimit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

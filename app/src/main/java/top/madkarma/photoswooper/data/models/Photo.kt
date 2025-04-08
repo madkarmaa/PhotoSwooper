@@ -1,8 +1,8 @@
-package com.example.photoswooper.data.models
+package top.madkarma.photoswooper.data.models
 
 import android.net.Uri
 import android.os.Build
-import com.example.photoswooper.data.database.MediaStatus
+import top.madkarma.photoswooper.data.database.MediaStatus
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId

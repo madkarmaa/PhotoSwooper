@@ -1,4 +1,4 @@
-package com.example.photoswooper.ui.components
+package top.madkarma.photoswooper.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -23,8 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
-import com.example.photoswooper.R
-import com.example.photoswooper.data.models.Photo
+import top.madkarma.photoswooper.R
+import top.madkarma.photoswooper.data.models.Photo
 
 @Composable
 fun ReviewDialog(

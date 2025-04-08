@@ -1,6 +1,6 @@
-package com.example.photoswooper.data.uistates
+package top.madkarma.photoswooper.data.uistates
 
-import com.example.photoswooper.data.models.Photo
+import top.madkarma.photoswooper.data.models.Photo
 
 enum class TimeFrame(val milliseconds: Long) {
     DAY(86400000),

@@ -1,4 +1,4 @@
-package com.example.photoswooper.ui.view
+package top.madkarma.photoswooper.ui.view
 
 import android.os.Build
 import android.text.format.Formatter.formatShortFileSize
@@ -36,11 +36,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.example.photoswooper.R
-import com.example.photoswooper.checkPermissionsAndGetPhotos
-import com.example.photoswooper.data.models.Photo
-import com.example.photoswooper.data.models.PhotoStatus
-import com.example.photoswooper.ui.components.ReviewDialog
+import top.madkarma.photoswooper.R
+import top.madkarma.photoswooper.checkPermissionsAndGetPhotos
+import top.madkarma.photoswooper.data.models.Photo
+import top.madkarma.photoswooper.data.models.PhotoStatus
+import top.madkarma.photoswooper.ui.components.ReviewDialog
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild

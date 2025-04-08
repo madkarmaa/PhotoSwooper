@@ -1,4 +1,4 @@
-package com.example.photoswooper
+package top.madkarma.photoswooper
 
 import android.Manifest.permission.*
 import android.app.Activity
@@ -20,12 +20,12 @@ import androidx.core.content.ContextCompat
 import coil3.ImageLoader
 import coil3.gif.AnimatedImageDecoder
 import coil3.gif.GifDecoder
-import com.example.photoswooper.data.database.MediaStatusDao
-import com.example.photoswooper.data.database.MediaStatusDatabase
-import com.example.photoswooper.ui.theme.PhotoSwooperTheme
-import com.example.photoswooper.ui.view.MainScreen
-import com.example.photoswooper.ui.view.MainViewModel
-import com.example.photoswooper.utils.ContentResolverInterface
+import top.madkarma.photoswooper.data.database.MediaStatusDao
+import top.madkarma.photoswooper.data.database.MediaStatusDatabase
+import top.madkarma.photoswooper.ui.theme.PhotoSwooperTheme
+import top.madkarma.photoswooper.ui.view.MainScreen
+import top.madkarma.photoswooper.ui.view.MainViewModel
+import top.madkarma.photoswooper.utils.ContentResolverInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

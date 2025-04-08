@@ -1,4 +1,4 @@
-package com.example.photoswooper.data.database
+package top.madkarma.photoswooper.data.database
 
 import android.content.Context
 import androidx.room.Database

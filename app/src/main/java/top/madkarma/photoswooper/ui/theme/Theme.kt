@@ -1,4 +1,4 @@
-package com.example.photoswooper.ui.theme
+package top.madkarma.photoswooper.ui.theme
 
 import android.app.Activity
 import android.os.Build

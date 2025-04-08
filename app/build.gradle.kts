@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.photoswooper"
+    namespace = "top.madkarma.photoswooper"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.photoswooper"
+        applicationId = "top.madkarma.photoswooper"
         minSdk = 24
         targetSdk = 35
         versionCode = 2

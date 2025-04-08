@@ -1,4 +1,4 @@
-package com.example.photoswooper.ui.view
+package top.madkarma.photoswooper.ui.view
 
 import android.content.Context
 import android.content.Intent
@@ -8,13 +8,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.photoswooper.data.database.MediaStatusDao
-import com.example.photoswooper.data.models.Photo
-import com.example.photoswooper.data.models.PhotoStatus
-import com.example.photoswooper.data.photoLimit
-import com.example.photoswooper.data.uistates.MainUiState
-import com.example.photoswooper.data.uistates.TimeFrame
-import com.example.photoswooper.utils.ContentResolverInterface
+import top.madkarma.photoswooper.data.database.MediaStatusDao
+import top.madkarma.photoswooper.data.models.Photo
+import top.madkarma.photoswooper.data.models.PhotoStatus
+import top.madkarma.photoswooper.data.photoLimit
+import top.madkarma.photoswooper.data.uistates.MainUiState
+import top.madkarma.photoswooper.data.uistates.TimeFrame
+import top.madkarma.photoswooper.utils.ContentResolverInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

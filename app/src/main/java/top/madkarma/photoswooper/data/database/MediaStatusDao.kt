@@ -1,7 +1,7 @@
-package com.example.photoswooper.data.database
+package top.madkarma.photoswooper.data.database
 
 import androidx.room.*
-import com.example.photoswooper.data.models.PhotoStatus
+import top.madkarma.photoswooper.data.models.PhotoStatus
 
 /**
  * Database Access Object that provides the functions to interact with the database

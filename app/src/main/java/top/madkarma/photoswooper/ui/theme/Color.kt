@@ -1,4 +1,4 @@
-package com.example.photoswooper.ui.theme
+package top.madkarma.photoswooper.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
