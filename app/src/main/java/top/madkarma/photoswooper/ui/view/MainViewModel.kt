@@ -8,6 +8,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import top.madkarma.photoswooper.data.database.MediaStatusDao
 import top.madkarma.photoswooper.data.models.Photo
 import top.madkarma.photoswooper.data.models.PhotoStatus
@@ -15,19 +21,13 @@ import top.madkarma.photoswooper.data.photoLimit
 import top.madkarma.photoswooper.data.uistates.MainUiState
 import top.madkarma.photoswooper.data.uistates.TimeFrame
 import top.madkarma.photoswooper.utils.ContentResolverInterface
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Date
 
 class MainViewModel(
     val contentResolverInterface: ContentResolverInterface,
     val mediaStatusDao: MediaStatusDao,
     val context: Context
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -51,16 +51,14 @@ class MainViewModel(
         contentResolverInterface.getPhotos(
             onAddPhoto = {
                 _uiState.value.photos.add(it)
-            },
-            numPhotos = 2
+            }, numPhotos = 2
         )
         // Add the rest of the photos asynchronously (speedy)
         viewModelScope.launch {
             contentResolverInterface.getPhotos(
                 onAddPhoto = {
                     _uiState.value.photos.add(it)
-                },
-                numPhotos = photoLimit - 2
+                }, numPhotos = photoLimit - 2
             )
         }
 
@@ -80,19 +78,17 @@ class MainViewModel(
 
         /* Update database only if keeping/unsetting the photo. Only marked as DELETE when confirmed and the file is deleted */
         CoroutineScope(Dispatchers.IO).launch {
-            if (status != PhotoStatus.DELETE)
-                mediaStatusDao.update(photo.getMediaStatusEntity())
+            if (status != PhotoStatus.DELETE) mediaStatusDao.update(photo.getMediaStatusEntity())
         }
 
         /* If photo being marked as UNSET, update the unset count & set the index to the next UNSET photo */
         Log.d("Photo marking", "Photo at index ${index} marked as ${photo.status}")
-        if (status == PhotoStatus.UNSET)
-            _uiState.update { currentState ->
-                currentState.copy(
-                    currentPhotoIndex = currentState.photos.indexOfFirst { it.status == PhotoStatus.UNSET },
-                    numUnset = currentState.numUnset + 1
-                )
-            }
+        if (status == PhotoStatus.UNSET) _uiState.update { currentState ->
+            currentState.copy(
+                currentPhotoIndex = currentState.photos.indexOfFirst { it.status == PhotoStatus.UNSET },
+                numUnset = currentState.numUnset + 1
+            )
+        }
     }
 
     fun nextPhoto() {
@@ -108,13 +104,12 @@ class MainViewModel(
     fun findUnsetPhoto() {
         _uiState.update { currentState ->
             currentState.copy(
-                currentPhotoIndex = currentState.photos.indexOfFirst { it.status == PhotoStatus.UNSET }
-            )
+                currentPhotoIndex = currentState.photos.indexOfFirst { it.status == PhotoStatus.UNSET })
         }
     }
 
     fun undo() {
-        if(uiState.value.currentPhotoIndex > 0) { // First check if there is an action to undo
+        if (uiState.value.currentPhotoIndex > 0) { // First check if there is an action to undo
             // Decrement currentPhotoIndex
             _uiState.update { currentState ->
                 currentState.copy(
@@ -130,18 +125,15 @@ class MainViewModel(
                 val photo = _uiState.value.photos[uiState.value.currentPhotoIndex]
                 mediaStatusDao.update(photo.getMediaStatusEntity())
             }
-        }
-        else {
+        } else {
             Toast.makeText(
-                context,
-                "Nothing to undo!",
-                Toast.LENGTH_SHORT
+                context, "Nothing to undo!", Toast.LENGTH_SHORT
             ).show()
         }
     }
 
     suspend fun deletePhotos(photosToDelete: List<Photo> = getPhotosToDelete()) {
-        if(photosToDelete.isNotEmpty()) {
+        if (photosToDelete.isNotEmpty()) {
             CoroutineScope(Dispatchers.IO).launch {
                 contentResolverInterface.deletePhotos(photosToDelete.map { it.uri }) // Delete the photo in user's storage
             }
@@ -165,13 +157,10 @@ class MainViewModel(
                     spaceSavedInTimeFrame = getSpaceSavedInTimeFrame()
                 )
             }
-        }
-        else {
+        } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 Toast.makeText(
-                    context,
-                    "No photos were deleted",
-                    Toast.LENGTH_SHORT
+                    context, "No photos were deleted", Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -184,6 +173,7 @@ class MainViewModel(
             )
         }
     }
+
     fun dismissReviewDialog() {
         _uiState.update { currentState ->
             currentState.copy(
@@ -201,7 +191,7 @@ class MainViewModel(
     }
 
     fun openLocationInMapsApp(photo: Photo?) {
-        val uri: String? = "geo:${photo?.location?.get(0)},${photo?.location?.get(1)}"
+        val uri: String = "geo:${photo?.location?.get(0)},${photo?.location?.get(1)}"
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
         context.startActivity(intent)
     }
@@ -228,17 +218,16 @@ class MainViewModel(
     suspend fun cycleStatsTimeFrame() {
         val currentTimeFrame = _uiState.value.currentStatsTimeFrame
         val newTimeFrame =
-            if (currentTimeFrame != TimeFrame.entries.last())
-                TimeFrame.entries[currentTimeFrame.ordinal + 1]
-            else
-                TimeFrame.entries.first()
+            if (currentTimeFrame != TimeFrame.entries.last()) TimeFrame.entries[currentTimeFrame.ordinal + 1]
+            else TimeFrame.entries.first()
         _uiState.update { currentState ->
             currentState.copy(
-                currentStatsTimeFrame =  newTimeFrame,
+                currentStatsTimeFrame = newTimeFrame,
                 spaceSavedInTimeFrame = getSpaceSavedInTimeFrame(newTimeFrame)
             )
         }
     }
+
     suspend fun getSpaceSavedInTimeFrame(timeFrame: TimeFrame = _uiState.value.currentStatsTimeFrame): Long {
         val currentDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Date().toInstant().toEpochMilli()
@@ -247,6 +236,6 @@ class MainViewModel(
         }
         val firstDateInTimeFrame = currentDate - timeFrame.milliseconds
 
-        return mediaStatusDao.getSizeBetweenDates(firstDateInTimeFrame, currentDate)?.sum()?: 0
+        return mediaStatusDao.getSizeBetweenDates(firstDateInTimeFrame, currentDate)?.sum() ?: 0
     }
 }

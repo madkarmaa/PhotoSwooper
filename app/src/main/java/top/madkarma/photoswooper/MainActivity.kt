@@ -45,12 +45,12 @@ class MainActivity : AppCompatActivity() {
 
         /* Custom image loader for animated GIFs */
         val imageLoader = ImageLoader.Builder(this).components {
-                if (SDK_INT >= 28) {
-                    add(AnimatedImageDecoder.Factory())
-                } else {
-                    add(GifDecoder.Factory())
-                }
-            }.build()
+            if (SDK_INT >= 28) {
+                add(AnimatedImageDecoder.Factory())
+            } else {
+                add(GifDecoder.Factory())
+            }
+        }.build()
 
         val contentResolverInterface = ContentResolverInterface(mediaStatusDao, this)
         mainViewModel = MainViewModel(
@@ -89,8 +89,7 @@ class MainActivity : AppCompatActivity() {
 
         /* Define permissions for read access of all photos/videos */
         val fullReadPermissions = if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(
-            READ_MEDIA_IMAGES,
-            READ_MEDIA_VIDEO
+            READ_MEDIA_IMAGES, READ_MEDIA_VIDEO
         )
         else arrayOf(READ_EXTERNAL_STORAGE)
 
@@ -122,9 +121,7 @@ fun checkPermissionsAndGetPhotos(
     var permissionsToRequest =
         mutableListOf<String>()/* Permissions to check depending on the android version */
     val readPermissions = if (SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) arrayOf(
-        READ_MEDIA_IMAGES,
-        READ_MEDIA_VIDEO,
-        READ_MEDIA_VISUAL_USER_SELECTED
+        READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, READ_MEDIA_VISUAL_USER_SELECTED
     )
     // TODO: might need to set readPermissions to nothing in this case so that the user doesn't get prompted to reselect allowed photos
     else if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO)
@@ -133,8 +130,7 @@ fun checkPermissionsAndGetPhotos(
     /* Set readPermissionGranted to false if any of the permissions are denied */
     readPermissions.forEach { readPermission ->
         if (ContextCompat.checkSelfPermission(
-                context,
-                readPermission
+                context, readPermission
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             permissionsToRequest.add(readPermission)

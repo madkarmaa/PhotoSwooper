@@ -10,26 +10,24 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.core.app.ActivityCompat.startIntentSenderForResult
 import androidx.exifinterface.media.ExifInterface
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import top.madkarma.photoswooper.data.database.MediaStatusDao
 import top.madkarma.photoswooper.data.models.Photo
 import top.madkarma.photoswooper.data.models.PhotoStatus
 import top.madkarma.photoswooper.data.photoLimit
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.security.MessageDigest
-import java.util.*
+import java.util.Date
 
 class ContentResolverInterface(
-    val dao: MediaStatusDao,
-    val context: Context
+    val dao: MediaStatusDao, val context: Context
 ) {
     val contentResolver = context.contentResolver
 
     @OptIn(ExperimentalStdlibApi::class) // For .toHexString()
     suspend fun getPhotos(
-        numPhotos: Int = photoLimit,
-        onAddPhoto: (Photo) -> Unit
+        numPhotos: Int = photoLimit, onAddPhoto: (Photo) -> Unit
     ) {
         // TODO("Change so that MediaStore.Images changes to MediaStore.Videos for video types")
         // TODO("Automatically add unset photos from app database before fetching from MediaStore")
@@ -58,16 +56,21 @@ class ContentResolverInterface(
             null, // selection parameter
             null, // (selectionArgs parameter) Fetch *all* image files
             "RANDOM()", // sortOrder parameter
-        ) ?.use { cursor ->
+        )?.use { cursor ->
 
             val idColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-            val dateTakenColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)
-            val dateAddedColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED)
+            val dateTakenColumnIndex =
+                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)
+            val dateAddedColumnIndex =
+                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED)
             val sizeColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)
             val albumColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.ALBUM)
-            val descriptionColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DESCRIPTION)
-            val displayNameColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
-            val resolutionColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.RESOLUTION)
+            val descriptionColumnIndex =
+                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DESCRIPTION)
+            val displayNameColumnIndex =
+                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
+            val resolutionColumnIndex =
+                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.RESOLUTION)
 
             /* add these values to the list of tracks */
             Log.d("MediaStore", "Iterating over database output")
@@ -81,13 +84,12 @@ class ContentResolverInterface(
                 val fetchedDisplayName = cursor.getString(displayNameColumnIndex)
                 val fetchedResolution = cursor.getString(resolutionColumnIndex)
                 val fetchedUri = ContentUris.withAppendedId(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    fetchedId
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, fetchedId
                 )
                 val file = contentResolver.openInputStream(fetchedUri)
                 val fileHash = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     val digest: MessageDigest = MessageDigest.getInstance("SHA-512")
-                    val hash: ByteArray = digest.digest(file?.readAllBytes()?: ByteArray(0))
+                    val hash: ByteArray = digest.digest(file?.readAllBytes() ?: ByteArray(0))
                     hash.toHexString()
                 } else {
                     TODO("VERSION.SDK_INT < TIRAMISU")
@@ -99,11 +101,9 @@ class ContentResolverInterface(
 
                     /* Define function to add photo to photos list & database (for later use) */
                     suspend fun addPhoto() {
-                        val date =
-                            if (fetchedDateTaken > 0)
-                                fetchedDateTaken
-                            else // if date taken is not found, use date added
-                                fetchedDateAdded
+                        val date = if (fetchedDateTaken > 0) fetchedDateTaken
+                        else // if date taken is not found, use date added
+                            fetchedDateAdded
 
                         var latLong: DoubleArray = doubleArrayOf(0.0, 0.0)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -134,27 +134,30 @@ class ContentResolverInterface(
                         }
                     }
 
-                    when {
-                        /* Photo MediaStore ID is in the database AND has been swiped (DELETE OR KEEP) */
-                        (findById != null && findById.status != PhotoStatus.UNSET) -> { file?.close() }
-                        /* Photo is in the database but its MediaStore ID has changed.
+                    when {/* Photo MediaStore ID is in the database AND has been swiped (DELETE OR KEEP) */
+                        (findById != null && findById.status != PhotoStatus.UNSET) -> {
+                            file?.close()
+                        }/* Photo is in the database but its MediaStore ID has changed.
                         * This will therefore 1. update the MediaStore ID. 2. if the status is UNSET, add the photo */
                         (findPhotoByHash != null) -> {
-                            Log.v("MediaStore", "Photo hash $fileHash has been found in database, updating id to $fetchedId")
-                            /* Update database */
+                            Log.v(
+                                "MediaStore",
+                                "Photo hash $fileHash has been found in database, updating id to $fetchedId"
+                            )/* Update database */
                             CoroutineScope(Dispatchers.IO).launch {
                                 var currentDate: Long = 0
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                                    currentDate = Date().toInstant().toEpochMilli()
-                                else
-                                    null// TODO("Get current date in epoch milli for Android version < O")
-                                dao.update(findPhotoByHash.copy(mediaStoreId = fetchedId, dateModified = currentDate))
-                            }
-                            /* Add photo if unset */
-                            if (findPhotoByHash.status == PhotoStatus.UNSET)
-                                addPhoto()
-                        }
-                        /* Photo has not been swiped */
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) currentDate =
+                                    Date().toInstant().toEpochMilli()
+                                else null// TODO("Get current date in epoch milli for Android version < O")
+                                dao.update(
+                                    findPhotoByHash.copy(
+                                        mediaStoreId = fetchedId,
+                                        dateModified = currentDate
+                                    )
+                                )
+                            }/* Add photo if unset */
+                            if (findPhotoByHash.status == PhotoStatus.UNSET) addPhoto()
+                        }/* Photo has not been swiped */
                         else -> {
                             addPhoto()
                         }
@@ -164,20 +167,26 @@ class ContentResolverInterface(
                 }
             }
         }
-}
+    }
 
     fun deletePhotos(uris: List<Uri>) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val editPendingIntent =
-                MediaStore.createTrashRequest(
-                    contentResolver,
-                    uris,
-                    true
-                )
+            val editPendingIntent = MediaStore.createTrashRequest(
+                contentResolver, uris, true
+            )
 
             val activity: Activity = context as Activity
             // Launch a system prompt requesting user permission for the operation.
-            startIntentSenderForResult(activity, editPendingIntent.intentSender, 100, null, 0, 0, 0, Bundle.EMPTY)
+            startIntentSenderForResult(
+                activity,
+                editPendingIntent.intentSender,
+                100,
+                null,
+                0,
+                0,
+                0,
+                Bundle.EMPTY
+            )
             // TODO("Check whether user actually deleted file before updating database")
         } else {
             uris.forEach { uri ->
