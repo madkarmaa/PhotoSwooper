@@ -6,15 +6,13 @@ import top.madkarma.photoswooper.data.database.MediaStatus
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
+import java.util.Date
 
-enum class PhotoStatus() {
-    UNSET,
-    DELETE,
-    KEEP,
+enum class PhotoStatus {
+    UNSET, DELETE, KEEP,
 }
 
-data class Photo (
+data class Photo(
     val id: Long,
     val uri: Uri,
     val fileHash: String,
@@ -29,9 +27,11 @@ data class Photo (
 ) {
     fun getFormattedDate(): String {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return LocalDateTime.ofInstant(Instant.ofEpochMilli(dateTaken?: 0), ZoneId.systemDefault()).toString().substringBefore("T")
-        }
-        else {
+            return LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(dateTaken ?: 0),
+                ZoneId.systemDefault()
+            ).toString().substringBefore("T")
+        } else {
             // TODO("Format date for Android version < O")
             return "1970-01-20"
         }
@@ -39,10 +39,9 @@ data class Photo (
 
     fun getMediaStatusEntity(): MediaStatus {
         var currentDate: Long = 0
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            currentDate = Date().toInstant().toEpochMilli()
-        else
-            null// TODO("Get current date in epoch milli for Android version < O")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) currentDate =
+            Date().toInstant().toEpochMilli()
+        else null// TODO("Get current date in epoch milli for Android version < O")
         return MediaStatus(
             fileHash = fileHash,
             mediaStoreId = id,

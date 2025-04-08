@@ -7,8 +7,7 @@ import top.madkarma.photoswooper.data.models.PhotoStatus
 
 /* This represents a row in the mediaStatus table in Room */
 @Entity(
-    tableName = "mediaStatus",
-    indices = [Index(value = ["mediaStoreId"], unique = false)]
+    tableName = "mediaStatus", indices = [Index(value = ["mediaStoreId"], unique = false)]
 )
 data class MediaStatus(
     @PrimaryKey val fileHash: String,

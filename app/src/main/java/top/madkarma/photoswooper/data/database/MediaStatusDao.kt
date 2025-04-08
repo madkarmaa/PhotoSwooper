@@ -1,6 +1,11 @@
 package top.madkarma.photoswooper.data.database
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import top.madkarma.photoswooper.data.models.PhotoStatus
 
 /**
@@ -10,7 +15,11 @@ import top.madkarma.photoswooper.data.models.PhotoStatus
 interface MediaStatusDao {
 
     @Query("SELECT size FROM mediaStatus WHERE (status = :status) AND (dateModified BETWEEN :firstDate AND :secondDate)")
-    suspend fun getSizeBetweenDates(firstDate: Long, secondDate: Long, status: PhotoStatus = PhotoStatus.DELETE): List<Long>?
+    suspend fun getSizeBetweenDates(
+        firstDate: Long,
+        secondDate: Long,
+        status: PhotoStatus = PhotoStatus.DELETE
+    ): List<Long>?
 
     @Query("SELECT * FROM mediaStatus WHERE fileHash = :hash LIMIT 1")
     suspend fun findByHash(hash: String): MediaStatus?

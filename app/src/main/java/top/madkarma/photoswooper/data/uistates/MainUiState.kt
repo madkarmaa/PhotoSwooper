@@ -3,10 +3,7 @@ package top.madkarma.photoswooper.data.uistates
 import top.madkarma.photoswooper.data.models.Photo
 
 enum class TimeFrame(val milliseconds: Long) {
-    DAY(86400000),
-    WEEK(604800000),
-    MONTH(2629746000),
-    YEAR(31556952000)
+    DAY(86400000), WEEK(604800000), MONTH(2629746000), YEAR(31556952000)
 }
 
 data class MainUiState(

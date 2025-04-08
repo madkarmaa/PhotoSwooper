@@ -20,11 +20,12 @@ abstract class MediaStatusDatabase : RoomDatabase() {
         fun getDatabase(context: Context): MediaStatusDatabase {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, MediaStatusDatabase::class.java, "mediaStatusDatabase")
-                    .build()
-                    .also { Instance = it }
+                Room.databaseBuilder(
+                    context,
+                    MediaStatusDatabase::class.java,
+                    "mediaStatusDatabase"
+                ).build().also { Instance = it }
             }
         }
     }
-
 }
